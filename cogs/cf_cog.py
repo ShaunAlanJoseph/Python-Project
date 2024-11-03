@@ -1,4 +1,4 @@
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord.ext.commands import command, Bot, Cog, Context  # type: ignore
 from discord import File
 from typing import Any, Dict, List
@@ -8,6 +8,7 @@ from codeforces.user import User
 from codeforces.problem import Problem, get_problems
 from utils.discord import send_message, BaseEmbed
 import random
+from asyncio import sleep
 
 
 class CFCog(Cog):
@@ -204,3 +205,52 @@ class CFCog(Cog):
         problem = random.choice(problems)
         embed = problem.get_problem_embed()
         await send_message(embed=embed)
+
+    @command(name="leaderboard")
+    async def leaderboard(self, ctx: Context[Bot]):
+        ctx_mgr().set_init_context(ctx)
+
+        embed = BaseEmbed(title="Leaderboard")
+        users = list(self.users.values())
+        users.sort(key=lambda user: user.rating, reverse=True)
+        for i, user in enumerate(users):
+            embed.add_field(name=f"{i + 1}. {user.handle}", value=f"Rating: {user.rating}")
+        await send_message(embed=embed)
+    
+    @command(name="solved_leaderboard")
+    async def solved_leaderboard(self, ctx: Context[Bot]):
+        ctx_mgr().set_init_context(ctx)
+
+        user_solves = {}
+        for user_id, user in self.users.items():
+            user.load_submissions()
+            user_solves[user.handle] = 0
+            for submission in user.submissions:
+                if submission.verdict == "OK":
+                    user_solves[user.handle] += 1
+            await sleep(2) 
+
+        embed = BaseEmbed(title="Solved Leaderboard")
+        users = list(self.users.values())
+        users.sort(key=lambda user: user_solves[user.handle], reverse=True)
+        for i, user in enumerate(users):
+            embed.add_field(name=f"{i + 1}. {user.handle}", value=f"Solved: {user_solves[user.handle]}")
+        await send_message(embed=embed)
+
+    @tasks.loop(hours=1)
+    async def update_users(self):
+        handles = [user.handle for user in self.users.values()]
+        handles_to_ids = {user.handle: user_id for user_id, user in self.users.items()}
+        for user in User.get_users(handles):
+            self.users[handles_to_ids[user.handle]] = user
+        
+        for user_id, user in self.users.items():
+            rank = "newbie" if user.rank is None else user.rank
+            for guild in self.bot.guilds:
+                role = self.roles[rank]
+                role = guild.get_role(role)
+                user = guild.get_member(user_id)
+                assert user is not None
+                assert role is not None
+                await user.add_roles(role)
+    
