@@ -212,7 +212,7 @@ class CFCog(Cog):
 
         embed = BaseEmbed(title="Leaderboard")
         users = list(self.users.values())
-        users.sort(key=lambda user: user.rating, reverse=True)
+        users.sort(key=lambda user: user.rating, reverse=True)  # type: ignore
         for i, user in enumerate(users):
             embed.add_field(name=f"{i + 1}. {user.handle}", value=f"Rating: {user.rating}")
         await send_message(embed=embed)
@@ -222,9 +222,10 @@ class CFCog(Cog):
         ctx_mgr().set_init_context(ctx)
 
         user_solves = {}
-        for user_id, user in self.users.items():
+        for _, user in self.users.items():
             user.load_submissions()
             user_solves[user.handle] = 0
+            assert user.submissions is not None
             for submission in user.submissions:
                 if submission.verdict == "OK":
                     user_solves[user.handle] += 1
@@ -232,9 +233,20 @@ class CFCog(Cog):
 
         embed = BaseEmbed(title="Solved Leaderboard")
         users = list(self.users.values())
-        users.sort(key=lambda user: user_solves[user.handle], reverse=True)
+        users.sort(key=lambda user: user_solves[user.handle], reverse=True)  # type: ignore
         for i, user in enumerate(users):
             embed.add_field(name=f"{i + 1}. {user.handle}", value=f"Solved: {user_solves[user.handle]}")
+        await send_message(embed=embed)
+    
+    @command(name="max_rating_leaderboard")
+    async def max_rating_leaderboard(self, ctx: Context[Bot]):
+        ctx_mgr().set_init_context(ctx)
+
+        embed = BaseEmbed(title="Max Rating Leaderboard")
+        users = list(self.users.values())
+        users.sort(key=lambda user: user.maxRating, reverse=True)  # type: ignore
+        for i, user in enumerate(users):
+            embed.add_field(name=f"{i + 1}. {user.handle}", value=f"Max Rating: {user.maxRating}")
         await send_message(embed=embed)
 
     @tasks.loop(hours=1)
