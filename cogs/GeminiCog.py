@@ -4,92 +4,11 @@ import google.generativeai as genai
 import time
 
 helpContext='''
-Below is the list of available commands
+Below is the list of available commands for the Codeforces Discord Bot:
 
-Study Tracker Commands
-
-Flashcard Commands
-- $add_flashcard 
-    {message}
-  Adds a new flashcard. Message format should be
-# Q: <question 256 chars>
-## A: <answer 256 chars>
-- <option1 256 chars>
-- <option2 256 chars>
-- <option3>
-
-- $list_flashcards  
-  Lists all flashcards. No arguments required.
-- $flashcard_flash {card_id}  
-  Flashes a specific flashcard by ID. Takes one argument: card_id.
-- $flashcard_create_set {set_name}
-  Creates a new flashcard set. Takes one argument: <set_name>
-- $flashcard_add_to_set {set_id} {card_id}
-  Adds a flashcard to a set by ID. Takes two arguments: set_id, card_id.
-- $flashcard_remove_from_set {set_id} {card_id}
-  Removes a flashcard from a set by ID. Takes two arguments: set_id, card_id.
-- $flashcard_review_set {set_id}
-  Reviews a flashcard set by ID. Takes one argument: set_id.
-
-Task Management Commands
-- $add_task {name}  
-  Adds a new task with a specified name. Takes one argument: name.
-- $set_task {name}  
-  Sets the current task by name. Takes one argument: name.
-- $set_task_by_id {id}  
-  Sets the current task by ID. Takes one argument: id.
-- $add_description {description}  
-  Adds a description to the current task. Takes one argument: description.
-- $list_tasks  
-  Lists all tasks. No arguments required.
-- $remove_task {name}  
-  Removes a task by name. Takes one argument: name.
-- $delete_task {id}  
-  Deletes a task by ID. Takes one argument: id.Also called task number
-- $mark_as_done {name}  
-  Marks a task as done by name. Takes one argument: name.
-- $mark_as_started {name}  
-  Marks a task as started by name. Takes one argument: name.
-- $mark_as_started_by_id {id}  
-  Marks a task as started by ID. Takes one argument: id.
-- $mark_as_done_by_id {id}  
-  Marks a task as done by ID. Takes one argument: id.
-- $set_due_date {due_date}  
-  Sets a due date for the current task. Takes one argument: due_date (format: YYYY-MM-DD HH:MM:SS).
-
-Music Commands
-- $add_song {message}  
-  Adds a new song. Message format should be 'Song Name by Artist.
-  For example: despacito by justin bieber
-  An attachment containing an audio file(mp3) should be sent with the message
-- $get_song {song_id}  
-  Retrieves a song by ID. Takes one argument: song_id.
-- $create_playlist {playlist name}  
-  Creates a new playlist. Takes the name of the playlist.
-- $get_playlist {playlist_id}  
-  Retrieves a playlist by ID. Takes one argument: playlist_id.
-- $add_song_to_playlist {playlist_id} {song_id}  
-  Adds a song to a playlist by song ID and playlist ID. Takes two arguments: playlist_id, song_id.
-- $remove_song_from_playlist {playlist_id} {song_id}  
-  Removes a song from a playlist by song ID and playlist ID. Takes two arguments: playlist_id, song_id.
-- $play_playlist {playlist_id}  
-  Plays a playlist by ID. Takes one argument: playlist_id.
-
-Time Table Management Commands
-- $create_time_table_entry {message}
-  Adds a new time table entry. Message format should be
-  # name: <name>
-  ## time: <time>
-  ## days: <days>
-  ## duration: <duration>(an integer in minutes)
-  - description: <description>
--$delete_time_table_entry {tt_id}
-  Removes a time table entry by ID. Takes one argument: tt_id.
-
-
-General Purpose Commands
+General Commands:
 - $ping  
-  Responds with 'Pong!' and alternates messages. No arguments required.
+  Responds with alternating "Ping!" and "Pong!" messages. No arguments required
 - $query {question}  
   Queries the Gemini API with your question and returns a response. Takes one argument: question.
 - $pm  
@@ -100,12 +19,49 @@ General Purpose Commands
   Disables Gemini from responding to every message in the server. No arguments required.
 - $register {name}  
   Registers a new user. Takes the name of the user
-- $set_institution {institution}
-  Sets the institution of the user. Takes the name of the institution
-- $set_dob {dob}
-  Sets the date of birth of the user. Takes the date of birth in the format DD MM YYYY
 - !help {question}  
   To ask a question related to the commands to the bot. Takes one optional argument: question.
+
+
+User Management Commands:
+- $register {handle}  
+  Registers a new user with the specified Codeforces handle. Takes one argument: handle.
+- $unregister  
+  Unregisters the current user. No arguments required.
+- $get_details  
+  Retrieves and displays the registered user's details. No arguments required.
+
+Graph Commands:
+- $rating_graph  
+  Displays the user's rating graph. No arguments required.
+- $rating_change_graph  
+  Displays the user's rating change graph. No arguments required.
+- $rating_comparison_graph {handle1} {handle2} ...  
+  Compares the rating graphs of multiple users. Takes multiple arguments: handles.
+- $rating_change_comparison_graph {handle1} {handle2} ...  
+  Compares the rating change graphs of multiple users. Takes multiple arguments: handles.
+- $subs_verdict_graph  
+  Displays the user's submissions verdict graph. No arguments required.
+
+Role Management Commands:
+- $assign_roles  
+  Assigns roles to users based on their Codeforces rank. No arguments required.
+
+Problem Management Commands:
+- $get_problems  
+  Loads and displays the count of available problems. No arguments required.
+- $recommend_problem  
+  Recommends a problem based on the user's rating. No arguments required.
+
+Leaderboard Commands:
+- $leaderboard  
+  Displays the leaderboard sorted by user ratings. No arguments required.
+- $solved_leaderboard  
+  Displays the leaderboard sorted by the number of problems solved. No arguments required.
+- $max_rating_leaderboard  
+  Displays the leaderboard sorted by users' maximum ratings. No arguments required.
+
+Note: Ensure you are registered to use most of the commands. Use $register to register yourself with your Codeforces handle.
 '''
 
 

@@ -16,6 +16,7 @@ async def main():
     await bot.add_cog(CFCog(bot))
     await bot.add_cog(GeminiAgent(bot))
 
+
     ContextManager.setup_context_manager()
 
     @bot.event

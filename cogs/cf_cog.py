@@ -265,4 +265,18 @@ class CFCog(Cog):
                 assert user is not None
                 assert role is not None
                 await user.add_roles(role)
+
+    @command(name="help")
+    async def help(self, ctx: Context[Bot]):
+        ctx_mgr().set_init_context(ctx)
+
+        embed = BaseEmbed(title="Help")
+        embed.add_field(name="General Commands", value="- $ping\nResponds with alternating 'Ping!' and 'Pong!' messages. No arguments required.\n- $query {question}\nQueries the Gemini API with your question and returns a response. Takes one argument: question.\n- $pm\nSends a private message to you asking how the bot can help and you can talk to it. No arguments required.\n- $gemini enable\nEnables Gemini to respond to every message in the server. No arguments required.\n- $gemini disable\nDisables Gemini from responding to every message in the server. No arguments required.\n- $register {name}\nRegisters a new user. Takes the name of the user\n- !help {question}\nTo ask a question related to the commands to the bot. Takes one optional argument: question.")
+        embed.add_field(name="User Management Commands", value="- $register {handle}\nRegisters a new user with the specified Codeforces handle. Takes one argument: handle.\n- $unregister\nUnregisters the current user. No arguments required.\n- $get_details\nRetrieves and displays the registered user's details. No arguments required.")
+        embed.add_field(name="Graph Commands", value="- $rating_graph\nDisplays the user's rating graph. No arguments required.\n- $rating_change_graph\nDisplays the user's rating change graph. No arguments required.\n- $rating_comparison_graph {handle1} {handle2} ...\nCompares the rating graphs of multiple users. Takes multiple arguments: handles.\n- $rating_change_comparison_graph {handle1} {handle2} ...\nCompares the rating change graphs of multiple users. Takes multiple arguments: handles.\n- $subs_verdict_graph\nDisplays the user's submissions verdict graph. No arguments required.")
+        embed.add_field(name="Role Management Commands", value="- $assign_roles\nAssigns roles to users based on their Codeforces rank. No arguments required.")
+        embed.add_field(name="Problem Management Commands", value="- $get_problems\nLoads and displays the count of available problems. No arguments required.\n- $recommend_problem\nRecommends a problem based on the user's rating. No arguments required.")
+        embed.add_field(name="Leaderboard Commands", value="- $leaderboard\nDisplays the leaderboard sorted by user ratings. No arguments required.\n- $solved_leaderboard\nDisplays the leaderboard sorted by the number of problems solved. No arguments required.\n- $max_rating_leaderboard\nDisplays the leaderboard sorted by users' maximum ratings. No arguments required.")
+        embed.add_field(name="Note", value="Ensure you are registered to use most of the commands. Use $register to register yourself with your Codeforces handle.")
+        await send_message(embed=embed)
     
