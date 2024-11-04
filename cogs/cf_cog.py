@@ -9,6 +9,7 @@ from codeforces.problem import Problem, get_problems
 from utils.discord import send_message, BaseEmbed
 import random
 from asyncio import sleep
+from database.database import Database
 
 
 class CFCog(Cog):
@@ -25,6 +26,13 @@ class CFCog(Cog):
     
     def __init__(self, bot: Bot):
         self.bot = bot
+
+        users = Database.fetch_many("SELECT user_id, handle FROM users")
+        if len(users) > 0:
+            handles = [user[1] for user in users]
+            for i, user in enumerate(User.get_users(handles)):
+                self.users[users[i][0]] = user
+        
         info("CF Bot has been loaded.")
 
     async def cog_command_error(self, ctx: Context[Any], error: Exception) -> None:
@@ -48,6 +56,18 @@ class CFCog(Cog):
         embed3 = BaseEmbed(title="Ping!")
         await send_message(content="Pong!", embed=embed3)
     
+    @staticmethod
+    async def remove_roles(bot: Bot):
+        for guild in bot.guilds:
+            roles = list(CFCog.roles.values())
+            roles = [guild.get_role(role) for role in roles]
+            roles = [role for role in roles if role is not None]
+            for member in guild.members:
+                if member.bot:
+                    continue
+
+                await member.remove_roles(*roles)
+    
     @command(name="register")
     async def register(self, ctx: Context[Bot], handle: str):
         ctx_mgr().set_init_context(ctx)
@@ -57,6 +77,8 @@ class CFCog(Cog):
             return
         
         self.users[ctx.author.id] = User(handle)
+        query = "INSERT INTO users (user_id, handle) VALUES (%s, %s)"
+        Database.execute_query(query, ctx.author.id, handle)
         await send_message(content="You have been registered!")
     
     @command(name="unregister")
@@ -68,6 +90,8 @@ class CFCog(Cog):
             return
         
         del self.users[ctx.author.id]
+        query = "DELETE FROM users WHERE user_id = %s"
+        Database.execute_query(query, ctx.author.id)
         await send_message(content="You have been unregistered!")
 
         assert ctx.author is not None

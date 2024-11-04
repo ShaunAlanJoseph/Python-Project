@@ -7,10 +7,15 @@ from config import DISCORD_API_TOKEN, ADMIN_CHANNEL_ID
 from cogs.GeminiCog import GeminiAgent
 from cogs.cf_cog import CFCog
 from utils.context_manager import ContextManager
+from database.database import Database
+from database.create_database import add_tables
 
 
 async def main():
     getLogger().setLevel(INFO)
+
+    Database.establish_connection()
+    add_tables()
 
     bot = commands.Bot(command_prefix="$", intents=Intents.all(),help_command=None)
     await bot.add_cog(CFCog(bot))
@@ -27,11 +32,8 @@ async def main():
         await HQ.send(f"Logged in as User: {bot.user.name} ID: `{bot.user.id}`")  # type: ignore
 
         # Removing all Roles
-        for guild in bot.guilds:
-            async for user in guild.fetch_members():
-                if user.bot:
-                    continue
-                await user.remove_roles(*user.roles[1:])
+        await CFCog.remove_roles(bot)
+        info("Removed all roles from all users.")
         await HQ.send("Removed all roles from all users.")  # type: ignore
 
 
