@@ -97,7 +97,7 @@ The Codeforces Discord Bot is designed to support competitive programmers on Dis
 The bot’s workflow is illustrated in the following image, demonstrating data flow and integration between user input, Discord API, Codeforces API, Gemini API, PostgreSQL database, and data processing libraries (NumPy, Matplotlib).
 
 **Workflow Diagram**:
-![[Pasted image 20241113144856.png]]
+<img src = "./design/workflow-diagram.png" >
 
 **Overview**:
 - **User Interaction via Discord**: Users input commands through Discord.
